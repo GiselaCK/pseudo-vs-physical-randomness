@@ -64,9 +64,8 @@ def bits_to_bytes(bits):
 
 def derivar_material(bits):
     raw = bits_to_bytes(bits)
-    digest = hashlib.sha256(raw).digest() # aplica SHA-256 (transforma um dado em uma sequência fixa de bits)
-    key = digest[:32] # usa 32 bytes como chave AES-256
-    iv = digest[:16] # usa 32 bytes como chave AES-256
+    key = raw[:32] # usa 32 bytes como chave AES-256
+    iv = raw[:16] # usa 16 bytes como vetor de inicialização
     return key, iv
 
 def encrypt(bits, mensagem):
@@ -114,7 +113,7 @@ def gen_fisico_fraco(n):
     return bits
 
 def hash_extracao(bits):
-    # Aplica SHA-256 para "extrair entropia" e remover viés estatístico.
+    # Aplica SHA-256
 
     raw = bits_to_bytes(bits)
     digest = hashlib.sha256(raw).digest()
@@ -233,5 +232,6 @@ if __name__ == "__main__":
     mostrar("Físico Cru", sucesso_fisico, tempo_fisico, msg_fisico)
     mostrar("Físico + Hash", sucesso_fisico_hash, tempo_fisico_hash, msg_fisico_hash)
     mostrar("secrets()", sucesso_secrets, tempo_secrets, msg_secrets)
+
 
     print("\n================ FIM DO EXPERIMENTO ================")
