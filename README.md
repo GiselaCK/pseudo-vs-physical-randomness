@@ -191,7 +191,7 @@ O repositório contém dois arquivos principais: `.ino` e `.py`
 - Faça a seguinte conexão:
   
 <p align="center">
-  <img src="circuito.png" width="500">
+  <img src="Captura de tela 2026-03-05 172849.png" width="500">
 </p>
 
 - Conecte o Arduino ao computador
