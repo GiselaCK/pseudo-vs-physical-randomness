@@ -1,20 +1,16 @@
-// Coleta de ruído físico com Arduino
-// Conectar nada ao pino A0 (flutuante)
-
 const int analogPin = A0;
-const unsigned long sampleDelay = 2; // ms
 
 void setup() {
   Serial.begin(115200);
+  DIDR0 = 0x01; // desativa buffer digital do ADC0
 }
 
 void loop() {
-  int raw = analogRead(analogPin); // 0–1023
-  
-  // Extrai bit menos significativo
-  int bit = raw & 1;
-  
+
+  int v = analogRead(analogPin);
+
+  int bit = v & 1;   // pega LSB
+
   Serial.println(bit);
-  
-  delay(sampleDelay);
+
 }
