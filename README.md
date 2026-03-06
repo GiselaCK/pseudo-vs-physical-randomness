@@ -1,53 +1,166 @@
-# Aleatoriedade vs Pseudoaleatoriedade: 
-## Demonstrando a importância do gerador de chaves em Criptoprafia Simétrica através de uma simulação simplicada em Python
+# Aleatoriedade vs Pseudoaleatoriedade  
+## Demonstrando a importância do gerador de chaves em Criptografia Simétrica através de uma simulação simplificada em Python
 
 ---
 
-**Integrantes:** Gisela Ceresér Kassick
+**Evento:** IV Encontro do PGMAT  
+**Data:** 12 e 13 de março de 2026  
+**Modalidade:** Apresentação de pôster  
 
-**Instituição:** Ilum - Escola de Ciência - CNPEM
+**Aluna:** Gisela Ceresér Kassick  
+**Orientador:** Dr. Daniel Roberto Cassar  
 
-**Professor orientador:** Daniel Roberto Cassar
+**Instituição:** Ilum – Escola de Ciência  
+Centro Nacional de Pesquisa em Energia e Materiais (CNPEM)  
+
+Campinas – Brasil  
+Março, 2026
 
 ---
 
-**Aleatoriedade vs Pseudoaleatoriedade: demonstrando a importância do gerador de chaves em Criptoprafia Simétrica através de uma simulação simplicada em Python** é um projeto que investiga o papel fundamental da aleatoriedade na criptografia simétrica por meio de uma abordagem experimental e comparativa. Desenvolvido em Python com integração Arduino, o projeto analisa quatro diferentes fontes de geração de números aleatórios — desde geradores pseudoaleatórios convencionais até fontes físicas de ruído —, avaliando sua qualidade estatística e seu impacto prático na segurança de um sistema criptográfico AES-256.
+**Aleatoriedade vs Pseudoaleatoriedade: demonstrando a importância do gerador de chaves em Criptografia Simétrica através de uma simulação simplificada em Python** é um projeto experimental que investiga o impacto da qualidade da aleatoriedade na segurança de sistemas criptográficos.
+
+O trabalho compara diferentes fontes de geração de números aleatórios — pseudoaleatórias, criptograficamente seguras e físicas — analisando suas propriedades estatísticas e seu comportamento prático na geração de chaves utilizadas em criptografia simétrica com AES-256.
 
 ---
 
-## Sumário
+# Sumário
 
 - [Sobre o projeto](#sobre-o-projeto)
+- [Metodologia](#metodologia)
 - [Como Executar](#como-executar)
 - [Especificações Técnicas](#especificações-técnicas)
 - [Resultados](#resultados)
 - [Referências](#referências)
-- [Professor orientador](#professor-orientador)
-- [Aluna desenvolvedora](#aluna-desenvolvedora)
+- [Orientador](#orientador)
+- [Autora](#autora)
 
 ---
 
-## Sobre o projeto
+# Sobre o projeto
 
-A aleatoriedade é elemento central da criptografia moderna, indispensável à geração de chaves, vetores de inicialização e demais parâmetros críticos de segurança. A proteção de sistemas criptográficos depende da produção de informações que um adversário não consiga aprender ou prever; portanto, a qualidade da fonte aleatória constitui requisito essencial para a confidencialidade e a integridade das comunicações.
+A geração de números aleatórios é fundamental para a segurança da criptografia moderna. Chaves criptográficas, vetores de inicialização e nonces dependem da existência de sequências imprevisíveis.
 
-O presente projeto tem como **objetivo** analisar e comparar a qualidade estatística e a adequação criptográfica de diferentes fontes de geração de números aleatórios, avaliando seu impacto na criptografia simétrica através de:
+Nem todos os geradores de números aleatórios possuem as mesmas propriedades. Enquanto **PRNGs** produzem sequências determinísticas a partir de uma seed, **CSPRNGs** utilizam fontes seguras do sistema operacional, e **TRNGs** exploram fenômenos físicos imprevisíveis, como ruído térmico.
 
-- Geração de sequências binárias a partir de quatro fontes distintas:
-  - **Gerador pseudoaleatório padrão (random)** – Mersenne Twister
-  - **Gerador criptograficamente seguro (secrets)** – CSPRNG do sistema
-  - **Fonte física bruta** – ruído térmico captado por Arduino
-  - **Fonte física com extração por hash** – SHA-256 aplicado ao ruído bruto para retirar viés estatísticos
+Este projeto investiga como diferentes fontes de aleatoriedade influenciam:
 
-Uma vez gerada as sequências binárias, o experimento prossegue para:
-- Análise **estatística** comparativa (entropia, autocorrelação, teste qui-quadrado)
-- Derivação de chaves AES-256 e vetores de inicialização
-- Simulação de **ataques** (reconstrução de seed e força bruta limitada)
-- Avaliação do impacto prático da qualidade da aleatoriedade na segurança criptográfica
+- a **qualidade estatística das sequências geradas**
+- a **segurança prática de chaves criptográficas**
 
-A pergunta que orienta a pesquisa é: *Diferenças na origem da aleatoriedade produzem variações estatísticas relevantes que impactam, de forma prática, a segurança de um sistema simples de criptografia simétrica?*
+A pergunta central do trabalho é:
+
+> Diferenças na origem da aleatoriedade impactam, na prática, a segurança de um sistema simples de criptografia simétrica?
 
 ---
+
+# Metodologia
+
+O experimento combina **análise estatística** das sequências geradas com **simulações de ataque criptográfico**.
+
+## 1. Fontes de aleatoriedade
+
+Foram analisadas quatro fontes distintas, cada uma gerando sequências de **256 bits**:
+
+| Fonte | Descrição |
+|------|------|
+| `random` | Gerador pseudoaleatório baseado no Mersenne Twister |
+| `secrets` | Gerador criptograficamente seguro baseado no sistema operacional |
+| Física bruta | Bits provenientes de ruído térmico medido com Arduino |
+| Física + hash | Bits físicos processados com SHA-256 |
+
+---
+
+## 2. Coleta da fonte física
+
+A fonte física foi obtida utilizando:
+
+- **Arduino Leonardo**
+- **resistor de 10 MΩ**
+- **amplificador operacional LM358**
+
+O circuito mede variações de **ruído térmico (Johnson–Nyquist)**.
+
+O Arduino:
+
+1. realiza leituras analógicas sucessivas
+2. extrai o **bit menos significativo (LSB)** do ADC
+3. envia os bits pela **porta serial** para o Python
+
+Esses bits compõem a sequência física utilizada no experimento.
+
+---
+
+## 3. Análise estatística
+
+Cada sequência foi avaliada utilizando três métricas principais:
+
+### Entropia de Shannon
+
+$$
+H(X) = -\sum P(x_i)\log_2 P(x_i)
+$$
+
+Mede o grau de incerteza da distribuição.
+
+---
+
+### Autocorrelação
+
+$$
+R(k) = \frac{E[(X_i-\mu)(X_{i+k}-\mu)]}{\sigma^2}
+$$
+
+Detecta dependência entre bits consecutivos.
+
+---
+
+### Teste Qui-quadrado
+
+$$
+\chi^2 = \sum \frac{(O_i-E_i)^2}{E_i}
+$$
+
+Avalia compatibilidade com distribuição uniforme.
+
+---
+
+## 4. Configuração criptográfica
+
+As sequências geradas foram utilizadas para derivar chaves criptográficas:
+
+- **Algoritmo:** AES-256  
+- **Modo:** CTR (Counter Mode)
+- **Chave:** 256 bits  
+- **IV:** primeiros 128 bits da sequência
+
+A implementação foi realizada com a biblioteca **cryptography (PyCA)**.
+
+---
+
+## 5. Simulação de ataques
+
+Para avaliar a segurança prática das chaves geradas foram simuladas duas estratégias de ataque.
+
+### Reconstrução de seed
+
+Explora o caráter determinístico do gerador `random`, tentando reproduzir a sequência original a partir de possíveis sementes.
+
+### Força bruta estatística
+
+Geração de múltiplas chaves a partir de um viés estatístico.
+### Força bruta limitada
+
+Geração de múltiplas chaves candidatas para tentativa de descriptografia bem-sucedida.
+
+O critério de sucesso foi:
+
+- recuperação completa da mensagem original
+- registro do tempo necessário para o ataque
+
+---
+
+
 
 ## Como Executar
 
@@ -55,9 +168,11 @@ A pergunta que orienta a pesquisa é: *Diferenças na origem da aleatoriedade pr
 
 - Python 3.8+
 - Arduino IDE
-- Bibliotecas Python: `pyserial`, `cryptography`, `numpy`, `scipy`, `matplotlib`
-- Arduino Uno (ou similar)
+- Bibliotecas Python: `pyserial`, `cryptography`, `numpy`, `scipy`, `matplotlib`, `tqdm`, `time`, `random`, `secrets`.
+- Arduino Leonardo (ou similar)
 - Jumpers
+- Resistor de 10 MΩ
+- Op Amp LM358
 
 ### Instalação
 
@@ -73,11 +188,14 @@ O repositório contém dois arquivos principais: `.ino` e `.py`
 
 **1. Configuração do Arduino para coleta de fonte física** - `.ino`
 
-- Conecte um jumper ao pino analógico A0 do Arduino, deixando a outra extremidade desconectada (estado flutuante)
+- Faça a seguinte conexão:
+  
+<p align="center">
+  <img src="circuito.png" width="500">
+</p>
+
 - Conecte o Arduino ao computador
 - Carregue o código `.ino` usando a Arduino IDE
-
-- fotooo
 
 
 **2. Execução do experimento completo** - `experimento.py`
@@ -89,9 +207,9 @@ python experimento.py
 Este script irá:
 - Coletar 10.000 sequências de 256 bits de cada fonte
 - Calcular métricas estatísticas (entropia, autocorrelação, qui-quadrado)
+- Salvar resultados em gráficos
 - Derivar chaves AES-256 e IVs
-- Salvar resultados em arquivos CSV e gráficos
-- Executar tentativa de decodificação por força limitada, registrando tempo e taxa de sucesso
+- Executar tentativa de decodificação pela sequência de ataques
 - Enviar relatório final
 
 ---
@@ -121,7 +239,7 @@ Este script irá:
 |-------|-----------|---------------|
 | **random** | Mersenne Twister (não criptográfico) | `random.getrandbits(256)` |
 | **secrets** | CSPRNG do sistema operacional | `secrets.randbits(256)` |
-| **Física bruta** | Ruído térmico do pino analógico | Leitura LSB do pino A0 flutuante |
+| **Física bruta** | Ruído térmico do resistor | Leitura LSB do pino A0 flutuante |
 | **Física + hash** | Ruído bruto com extração SHA-256 | `hashlib.sha256(bits).digest()` |
 
 #### Métricas Estatísticas
@@ -186,15 +304,32 @@ Valores elevados de $\( \chi^2 \)$ indicam desvio significativo da uniformidade.
 - **IV:** 128 bits derivados da sequência
 - **Mensagem teste:** Input para o usuário completar
 
-#### Modelo de Ataques
-
-Tentar resolver ainda
-
 ---
 
 ## Resultados
+Os experimentos foram executados em **10.000 iterações independentes** para cada fonte de aleatoriedade.
 
-*Espaço reservado para inserção dos resultados experimentais após execução*
+### Principais observações
+
+#### `random()`
+- boas propriedades estatísticas  
+- vulnerável à **reconstrução de seed**
+
+#### `secrets()`
+- comportamento estatístico próximo do ideal  
+- **nenhuma vulnerabilidade observada**
+
+#### **Fonte física bruta**
+- presença de **viés** e **autocorrelação**  
+- imperfeições experimentais esperadas em sistemas físicos
+
+#### **Fonte física + SHA-256**
+- **redução significativa do viés**
+- comportamento estatístico **próximo do ideal**
+
+---
+
+Os resultados demonstram que **propriedades estatísticas aparentemente adequadas não garantem segurança criptográfica**, reforçando a necessidade de utilizar **geradores projetados especificamente para aplicações criptográficas**.
 
 
 ---
@@ -222,6 +357,8 @@ PYTHON SOFTWARE FOUNDATION. **hashlib — algoritmos de hash seguros**. Disponí
 PYCA CRYPTOGRAPHY. **Cryptography Documentation**. Disponível em: https://cryptography.io. Acesso em: 26 fev. 2026.
 
 VIGNA, S. **It Is High Time We Let Go of the Mersenne Twister**. arXiv:1910.06437, 2019. Disponível em: https://arxiv.org/abs/1910.06437. Acesso em: 26 fev. 2026.
+
+WALTER, Daniela; BÜLAU, André; ZIMMERMANN, André. **Review on excess noise measurements of resistors**. Sensors, v. 23, n. 3, p. 1107, 2023. DOI: https://doi.org/10.3390/s23031107
 
 ---
 
