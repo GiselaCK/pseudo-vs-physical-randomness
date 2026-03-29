@@ -140,7 +140,7 @@ A implementação foi realizada com a biblioteca **cryptography (PyCA)**.
 
 ## 5. Simulação de ataques
 
-Para avaliar a segurança prática das chaves geradas foram simuladas duas estratégias de ataque.
+Para avaliar a segurança prática das chaves geradas foram simuladas três estratégias de ataque.
 
 ### Reconstrução de seed
 
